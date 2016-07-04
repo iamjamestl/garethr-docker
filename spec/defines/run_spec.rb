@@ -130,6 +130,16 @@ require 'spec_helper'
           it { should contain_file(initscript).with_content(/After=(.*\s+)?bar.service/) }
           it { should contain_file(initscript).with_content(/Requires=(.*\s+)?foo.service/) }
           it { should contain_file(initscript).with_content(/Requires=(.*\s+)?bar.service/) }
+
+          context 'with full systemd unit names' do
+            let(:params) { {'command' => 'command', 'image' => 'base', 'depend_services' => ['foo', 'bar.service', 'baz.target']} }
+            it { should contain_file(initscript).with_content(/After=(.*\s+)?foo.service(\s+|$)/) }
+            it { should contain_file(initscript).with_content(/After=(.*\s+)?bar.service(\s+|$)/) }
+            it { should contain_file(initscript).with_content(/After=(.*\s+)?baz.target(\s+|$)/) }
+            it { should contain_file(initscript).with_content(/Requires=(.*\s+)?foo.service(\s+|$)/) }
+            it { should contain_file(initscript).with_content(/Requires=(.*\s+)?bar.service(\s+|$)/) }
+            it { should contain_file(initscript).with_content(/Requires=(.*\s+)?baz.target(\s+|$)/) }
+          end
         else
           if (osfamily == 'Gentoo')
             it { should contain_file(initscript).with_content(/after.*\s+foo/) }
